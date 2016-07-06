@@ -39,6 +39,10 @@
     </developer>
   </developers>
 
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
   <dependencies>
     <!-- https://mvnrepository.com/artifact/junit/junit -->
     <!-- Unit testing framework -->
@@ -105,6 +109,85 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+    <!-- Disallow nonstandard coding style from being promoted. -->
+    <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-checkstyle-plugin -->
+    <dependency>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.17</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-artifact</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-model</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-profile</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-settings</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-descriptor</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.doxia</groupId>
+            <artifactId>doxia-decoration-model</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.doxia</groupId>
+            <artifactId>doxia-integration-tools</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.doxia</groupId>
+            <artifactId>doxia-sink-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.doxia</groupId>
+            <artifactId>doxia-site-renderer</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.reporting</groupId>
+            <artifactId>maven-reporting-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.reporting</groupId>
+            <artifactId>maven-reporting-impl</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-resources</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-velocity</artifactId>
+          </exclusion>
+        </exclusions>
+    </dependency>
+
 
     <!-- Control unit test execution -->
     <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
@@ -247,10 +330,13 @@
         </exclusion>
       </exclusions>
     </dependency>
-
   </dependencies>
 
   <build>
+    <finalName>
+      ${project.artifactId}-${project.version}
+    </finalName>
+
     <plugins>
 
       <!-- Set the Java compiler version -->
@@ -262,6 +348,30 @@
           <source>1.8</source>
           <target>1.8</target>
         </configuration>
+      </plugin>
+
+      <!-- Validate that code follows stylistic standards -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.17</version>
+        <configuration>
+          <configLocation>${basedir}/checkstyle/google_checks.xml</configLocation>
+          <maxAllowedViolations>1000</maxAllowedViolations>
+          <encoding>UTF-8</encoding>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
+          <linkXRef>false</linkXRef>
+        </configuration>
+        <executions>
+          <execution>
+            <id>checkstyle-validate</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <!-- Exclude integration tests from the unit test goal -->
@@ -359,9 +469,17 @@
       <version>1.4.1</version>
       <configuration>
         <rules>
-          <!-- Fail the build when there is a version conflict in a dependency -->
+          <bannedDependencies>
+            <searchTransitive>true</searchTransitive>
+            <excludes>
+              <exclude>junit:junit</exclude>
+            </excludes>
+            <includes>
+              <include>junit:junit:4.12</include>
+            </includes>
+          </bannedDependencies>
+          <requireUpperBoundDeps/>
           <dependencyConvergence/>
-          <!-- Fail the build when the JDK is below 1.8.0 (normalized to "9") -->
           <requireJavaVersion>
             <version>[9,)</version>
           </requireJavaVersion>
@@ -373,6 +491,7 @@
           <goals>
             <goal>enforce</goal>
           </goals>
+          <phase>validate</phase>
         </execution>
       </executions>
     </plugin>
@@ -383,7 +502,6 @@
       <artifactId>maven-project-info-reports-plugin</artifactId>
       <version>2.9</version>
     </plugin>
-
   </plugins>
   </build>
 </project>

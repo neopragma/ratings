@@ -2,6 +2,7 @@ package com.neopragma.ratings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -19,13 +20,31 @@ public class RatingsTest {
 
     private static final int PLAYER_1 = 0;
     private static final int PLAYER_2 = 1;
+    private static TreeMap<Integer, Integer> range;
 
     @Mock private Name anyName;
     private Ratings ratings;
 
+    @BeforeClass
+    public static void beforeAllExamples() {
+        range = new TreeMap<Integer, Integer>();
+        range.put(20, 0);
+        range.put(19, 1);
+        range.put(9, 2);
+        range.put(3, 3);
+        range.put(0, 4);
+        range.put(-1, 5);
+        range.put(-4, 6);
+        range.put(-10, 7);
+        range.put(-20, 8);
+        range.put(-30, 9);
+        range.put(-40, 10);
+        range.put(-50, 12);
+    }
+
     @Before
     public void beforeEachExample() {
-        ratings = new Ratings();
+        ratings = new Ratings(range);
     }
 
     @Test
