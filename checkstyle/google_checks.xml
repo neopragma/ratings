@@ -20,10 +20,11 @@
 
     <property name="severity" value="warning"/>
 
-
+<!--
         <module name="SuppressionFilter">
-            <property name="file" value="checkstyle/suppressions.xml" />
+            <property name="file" value="${project.basedir}/checkstyle/suppressions.xml" />
         </module>
+-->
 
 
 

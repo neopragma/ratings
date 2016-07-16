@@ -18,7 +18,7 @@ public class Ratings {
      * Instantiates a valid Ratings object.
      * @param ranges - list of range upper bounds and adjustment points.
      */
-    public Ratings(final Map ranges) {
+    public Ratings(final Map<Integer, Integer> ranges) {
         this.ranges = ranges;
     }
 
